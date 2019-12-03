@@ -1,0 +1,7 @@
+{
+  "enterSomeText": "Please enter valid information.",
+  "noNetwork": "No network connection.",
+  "unExpectedError": "There was an unexpected error. Please try again later",
+  "problemParsingError": "There was a problem parsing the response. Please try again later",
+  "error": "Something went wrong. Please try again."
+}
