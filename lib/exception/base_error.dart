@@ -24,7 +24,7 @@ class BaseError implements Exception {
   String toString() => message;
 
   /*String toString() =>
-      "AmerErrorType [$type]: " +
+      "BaseErrorType [$type]: " +
           (message ?? "") +
           (stackTrace ?? "").toString();*/
 

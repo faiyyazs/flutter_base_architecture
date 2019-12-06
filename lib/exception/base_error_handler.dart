@@ -1,5 +1,4 @@
 import 'package:flutter/widgets.dart';
-import 'package:flutter_base_architecture/generated/i18n.dart';
 
 import 'base_error.dart';
 import 'base_error_parser.dart';
@@ -15,9 +14,10 @@ class ErrorHandler<T extends BaseErrorParser>{
 
 }
 
-class MYProjectParser extends BaseErrorParser{
+/**
+class MyProjectParser extends BaseErrorParser{
 
-  MYProjectParser() : super();
+    MyProjectParser() : super();
 
   @override
   String parseError(BuildContext context,BaseError error) {
@@ -50,5 +50,5 @@ class MoreErrors extends BaseErrorType<int>{
 
 }
 
-
+**/
 
