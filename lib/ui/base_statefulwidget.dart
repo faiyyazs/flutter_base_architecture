@@ -148,7 +148,7 @@ abstract class BaseStatefulScreen<
 
   // Can be overridden in extended widget to support AppBar
   Widget errorWidget(){
-    return BaseErrorScreen(errorLogo());
+    return BaseErrorScreen(errorLogo(),widgetErrorMessage());
   }
 
   Widget buildAppbar() {
@@ -166,9 +166,13 @@ abstract class BaseStatefulScreen<
 
   String errorLogo();
 
+  String widgetErrorMessage();
+
   @override
   void dispose() {
     getViewModel().dispose();
     super.dispose();
   }
+
+
 }

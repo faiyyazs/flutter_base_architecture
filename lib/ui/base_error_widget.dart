@@ -1,15 +1,15 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_base_architecture/generated/i18n.dart';
 import 'package:flutter_svg/svg.dart';
 
 import 'base_statelesswidget.dart';
 
 class BaseErrorScreen extends BaseStatelessScreen {
   final String assetName;
+  final String errorMessage;
 
-  BaseErrorScreen(this.assetName);
+  BaseErrorScreen(this.assetName, this.errorMessage);
 
   @override
   Widget buildAppbar(BuildContext context) {
@@ -41,7 +41,7 @@ class BaseErrorScreen extends BaseStatelessScreen {
               Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Text(
-                  S.of(context).error,
+                  errorMessage,
                   style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
