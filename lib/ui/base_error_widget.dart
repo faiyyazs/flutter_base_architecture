@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_base_architecture/generated/i18n.dart';
-import 'package:flutter_base_architecture/utils/app_colors.dart';
 import 'package:flutter_svg/svg.dart';
 
 import 'base_statelesswidget.dart';
@@ -16,11 +15,10 @@ class BaseErrorScreen extends BaseStatelessScreen {
   Widget buildAppbar(BuildContext context) {
     return AppBar(
       elevation: 0,
-      backgroundColor: BaseAppColors.white,
       leading: Padding(
         padding: EdgeInsets.all(8.0),
         child: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: BaseAppColors.primaryColor),
+          icon: Icon(Icons.arrow_back_ios),
           onPressed: () {
             SystemNavigator.pop();
           },

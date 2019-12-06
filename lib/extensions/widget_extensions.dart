@@ -2,28 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_base_architecture/exception/base_error.dart';
 import 'package:flutter_base_architecture/generated/i18n.dart';
-import 'package:flutter_base_architecture/utils/app_colors.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 extension BaseWidgetExtension on Widget {
-  void toastMessage(String message,{
-    Toast toastLength:Toast.LENGTH_SHORT,
-    ToastGravity gravity:ToastGravity.BOTTOM,
-    Color backgroundColor:BaseAppColors.whiteForeGroundTransparent,
-    Color textColor:Colors.black,
-    double fontSize: 14.0}) {
+  void toastMessage(String message,
+      {Toast toastLength,
+      ToastGravity gravity,
+      Color backgroundColor,
+      int timeInSecForIos,
+      Color textColor,
+      double fontSize}) {
     Fluttertoast.showToast(
         msg: message,
         toastLength: toastLength,
         gravity: gravity,
-        timeInSecForIos: 2,
+        timeInSecForIos: timeInSecForIos,
         backgroundColor: backgroundColor,
         textColor: textColor,
         fontSize: fontSize);
   }
 
   String handleError(BuildContext context, BaseError error) {
-
     switch (error.type) {
       case BaseErrorType.DEFAULT:
         return S.of(context).error;
@@ -45,6 +44,4 @@ extension BaseWidgetExtension on Widget {
         break;
     }
   }
-
-
 }

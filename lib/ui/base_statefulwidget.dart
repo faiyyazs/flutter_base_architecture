@@ -6,9 +6,8 @@ import 'package:flutter_base_architecture/exception/base_error.dart';
 import 'package:flutter_base_architecture/exception/base_error_handler.dart';
 import 'package:flutter_base_architecture/exception/base_error_parser.dart';
 import 'package:flutter_base_architecture/extensions/widget_extensions.dart';
-import 'package:flutter_base_architecture/utils/app_colors.dart';
-import 'package:flutter_base_architecture/utils/asset_icons.dart';
 import 'package:flutter_base_architecture/viewmodels/base_view_model.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
 import 'base_error_widget.dart';
@@ -19,13 +18,11 @@ abstract class BaseStatefulWidget extends StatefulWidget {
   const BaseStatefulWidget({Key key}) : super(key: key);
 }
 
-abstract class _BaseState<T extends BaseStatefulWidget,ErrorParser extends BaseErrorParser, BaseViewModel>
-    extends State<T> {
+abstract class _BaseState<T extends BaseStatefulWidget,
+    ErrorParser extends BaseErrorParser, BaseViewModel> extends State<T> {
   bool _requiresLogin = true;
   UserStore _userStore;
   ErrorHandler<ErrorParser> _errorHandler;
-
-
 
   @override
   void initState() {
@@ -69,8 +66,20 @@ abstract class _BaseState<T extends BaseStatefulWidget,ErrorParser extends BaseE
     return await _userStore.getLoggedInUser();
   }
 
-  void showToastMessage(String message) {
-    widget?.toastMessage(message);
+  void showToastMessage(String message,
+      {Toast toastLength,
+      ToastGravity gravity,
+      Color backgroundColor,
+      int timeInSecForIos,
+      Color textColor,
+      double fontSize}) {
+    widget?.toastMessage(message,
+        toastLength: toastLength,
+        gravity: gravity,
+        timeInSecForIos: timeInSecForIos,
+        backgroundColor: backgroundColor,
+        textColor: textColor,
+        fontSize: fontSize);
   }
 
   String getErrorMessage(BaseError errorType) {
@@ -78,8 +87,10 @@ abstract class _BaseState<T extends BaseStatefulWidget,ErrorParser extends BaseE
   }
 }
 
-abstract class BaseStatefulScreen<B extends BaseStatefulWidget,
-ErrorParser extends BaseErrorParser,VM extends BaseViewModel> extends _BaseState<B,ErrorParser, VM> {
+abstract class BaseStatefulScreen<
+    B extends BaseStatefulWidget,
+    ErrorParser extends BaseErrorParser,
+    VM extends BaseViewModel> extends _BaseState<B, ErrorParser, VM> {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
   VM viewModel;
@@ -102,13 +113,13 @@ ErrorParser extends BaseErrorParser,VM extends BaseViewModel> extends _BaseState
   Widget build(BuildContext context) {
     addDefaultErrorWidget(context);
     _userStore = Provider.of(context);
-    _errorHandler = Provider.of(context,listen: false);
+    _errorHandler = Provider.of(context, listen: false);
     return getLayout();
   }
 
   void addDefaultErrorWidget(context) {
     ErrorWidget.builder = (FlutterErrorDetails details) {
-      return BaseErrorScreen(getErrorLogo());
+      return errorWidget();
     };
   }
 
@@ -119,13 +130,13 @@ ErrorParser extends BaseErrorParser,VM extends BaseViewModel> extends _BaseState
   Widget getLayout() {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle(
-        statusBarColor: getStatusBarColor(),
+        statusBarColor: statusBarColor(),
       ),
       child: BaseWidget<VM>(
           viewModel: getViewModel(),
           builder: (BuildContext context, VM model, Widget child) {
             return Scaffold(
-              backgroundColor: getScaffoldColor(),
+              backgroundColor: scaffoldColor(),
               key: scaffoldKey,
               appBar: buildAppbar(),
               body: buildBody(),
@@ -136,17 +147,8 @@ ErrorParser extends BaseErrorParser,VM extends BaseViewModel> extends _BaseState
   }
 
   // Can be overridden in extended widget to support AppBar
-
-  Color getScaffoldColor() {
-    return BaseAppColors.whiteBg;
-  }
-
-  Color getStatusBarColor() {
-    return BaseAppColors.black;
-  }
-
-  String getErrorLogo() {
-    return AssetIcons.logo.assetName;
+  Widget errorWidget(){
+    return BaseErrorScreen(errorLogo());
   }
 
   Widget buildAppbar() {
@@ -157,6 +159,12 @@ ErrorParser extends BaseErrorParser,VM extends BaseViewModel> extends _BaseState
   Widget buildBody();
 
   VM initViewModel();
+
+  Color scaffoldColor();
+
+  Color statusBarColor();
+
+  String errorLogo();
 
   @override
   void dispose() {
