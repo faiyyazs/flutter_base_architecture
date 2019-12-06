@@ -4,6 +4,8 @@ import 'package:flutter_base_architecture/extensions/widget_extensions.dart';
 import 'package:provider/provider.dart';
 
 abstract class BaseModelWidget<T> extends Widget {
+
+
   @protected
   Widget build(BuildContext context, T model);
 

@@ -2,30 +2,38 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_base_architecture/generated/i18n.dart';
 
 import 'base_error.dart';
+import 'base_error_parser.dart';
 
-class BaseErrorHandler{
+class ErrorHandler<T extends BaseErrorParser>{
 
-  final BuildContext context;
+  final T parser;
+  ErrorHandler(this.parser);
 
-  BaseErrorHandler(this.context);
+  String parseErrorType(BuildContext context,BaseError error){
+    return parser.parseError(context,error);
+  }
 
-  @mustCallSuper
-  String parseError(BaseError error){
+}
+
+class MYProjectParser extends BaseErrorParser{
+
+  MYProjectParser() : super();
+
+  @override
+  String parseError(BuildContext context,BaseError error) {
+
+
+    var errorMessage = super.parseError(context,error);
+    if(errorMessage != null){
+      return errorMessage;
+    }
     switch (error.type) {
-      case BaseErrorType.DEFAULT:
+      // My Other error types
+
+      case MoreErrors.EXTRA:
+
         return S.of(context).error;
-        break;
 
-      case BaseErrorType.UNEXPECTED:
-        return S.of(context).unExpectedError;
-        break;
-
-      case BaseErrorType.SERVER_TIMEOUT:
-        return S.of(context).noNetwork;
-        break;
-      case BaseErrorType.INVALID_RESPONSE:
-        return S.of(context).problemParsingError;
-        break;
 
       default:
         return S.of(context).unExpectedError;
@@ -34,3 +42,13 @@ class BaseErrorHandler{
   }
 
 }
+
+class MoreErrors extends BaseErrorType<int>{
+  const MoreErrors(int value) : super(value);
+
+  static const BaseErrorType EXTRA   = const BaseErrorType(6);
+
+}
+
+
+

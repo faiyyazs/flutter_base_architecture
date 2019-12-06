@@ -4,6 +4,8 @@ import 'package:flutter_base_architecture/constants/route_paths.dart';
 import 'package:flutter_base_architecture/data/local/sharedpreferences/user_stores.dart';
 import 'package:flutter_base_architecture/dto/user_dto.dart';
 import 'package:flutter_base_architecture/exception/base_error.dart';
+import 'package:flutter_base_architecture/exception/base_error_handler.dart';
+import 'package:flutter_base_architecture/exception/base_error_parser.dart';
 import 'package:flutter_base_architecture/extensions/widget_extensions.dart';
 import 'package:flutter_base_architecture/utils/app_colors.dart';
 import 'package:flutter_base_architecture/utils/asset_icons.dart';
@@ -18,10 +20,13 @@ abstract class BaseStatefulWidget extends StatefulWidget {
   const BaseStatefulWidget({Key key}) : super(key: key);
 }
 
-abstract class BaseState<T extends BaseStatefulWidget, BaseViewModel>
+abstract class BaseState<T extends BaseStatefulWidget,ErrorParser extends BaseErrorParser, BaseViewModel>
     extends State<T> {
   bool _requiresLogin = true;
   UserStore _userStore;
+  ErrorHandler<ErrorParser> _errorHandler;
+
+
 
   @override
   void initState() {
@@ -68,12 +73,13 @@ abstract class BaseState<T extends BaseStatefulWidget, BaseViewModel>
   }
 
   String getErrorMessage(BaseError errorType) {
+    return _errorHandler.parseErrorType(context, errorType);
     return widget?.handleError(context, errorType);
   }
 }
 
 abstract class BaseStatefulScreen<B extends BaseStatefulWidget,
-    VM extends BaseViewModel> extends BaseState<B, BaseViewModel> {
+ErrorParser extends BaseErrorParser,VM extends BaseViewModel> extends BaseState<B,ErrorParser, VM> {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
   VM viewModel;
@@ -96,6 +102,7 @@ abstract class BaseStatefulScreen<B extends BaseStatefulWidget,
   Widget build(BuildContext context) {
     addDefaultErrorWidget(context);
     _userStore = Provider.of(context);
+    _errorHandler = Provider.of(context,listen: false);
     return getLayout();
   }
 
