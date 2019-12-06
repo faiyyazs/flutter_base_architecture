@@ -1,4 +1,6 @@
-class UserDto {
+import 'package:flutter_base_architecture/dto/base_dto.dart';
+
+class UserDto extends BaseDto{
   String name;
   num _id;
 
@@ -9,9 +11,11 @@ class UserDto {
     this.name = obj["name"];
   }
 
-  Map<String, dynamic> toMap() {
+  @override
+  Map<String, dynamic> toJson() {
     var map = new Map<String, dynamic>();
     map["name"] = name;
     return map;
   }
+
 }

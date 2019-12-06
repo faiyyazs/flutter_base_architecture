@@ -1,24 +1,14 @@
 import 'dart:convert';
 
 import 'package:flutter_base_architecture/constants/session_manager_const.dart';
-import 'package:flutter_base_architecture/dto/user_dto.dart';
+import 'package:flutter_base_architecture/dto/base_dto.dart';
 import 'package:flutter_base_architecture/utils/session_manager.dart';
 
-class UserStore {
-  UserStore._();
+abstract class UserStore<T extends BaseDto> {
 
-  static UserStore _instance;
-
-  static UserStore getInstance() {
-    if (_instance == null) {
-      _instance = UserStore._();
-    }
-    return _instance;
-  }
-
-  Future<bool> setUser(UserDto userDto) async {
+  Future<bool> setUser(T userDto) async {
     var preference = await SessionManager.getInstance();
-    return preference.setString(const_user, json.encode(userDto.toMap()));
+    return preference.setString(const_user, json.encode(userDto.toJson()));
   }
 
   Future<bool> userIsLoggedIn() async {
@@ -26,10 +16,22 @@ class UserStore {
     return ((preference.getString(const_user) != null) ? true : false);
   }
 
-  Future<UserDto> getLoggedInUser() async {
+  Future<T> getLoggedInUserJson() async {
     var preference = await SessionManager.getInstance();
     return preference.getString(const_user) != null
-        ? UserDto.map(json.decode(preference.getString(const_user)))
+        ? mapUserDto(json.decode(preference.getString(const_user)))
         : null;
   }
+
+  T mapUserDto(decode);
+
 }
+
+/*class Test extends UserStore<UserDto> {
+  @override
+  UserDto mapUserDto(decode) {
+   return UserDto.map(decode);
+  }
+}*/
+
+

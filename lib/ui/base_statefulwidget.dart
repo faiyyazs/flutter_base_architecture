@@ -63,7 +63,7 @@ abstract class _BaseState<T extends BaseStatefulWidget,
   }
 
   Future<UserDto> getLoggedInUser() async {
-    return await _userStore.getLoggedInUser();
+    return await _userStore.getLoggedInUserJson();
   }
 
   void showToastMessage(String message,
