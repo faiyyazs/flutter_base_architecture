@@ -28,7 +28,7 @@ abstract class BaseModelWidget<T> extends Widget {
   }
 
   String getErrorMessage(BuildContext context, BaseError error) {
-    return handleError(context, error);
+    return ""; //TO-DO
   }
 }
 

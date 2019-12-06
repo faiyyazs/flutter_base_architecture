@@ -32,16 +32,14 @@ class BaseError implements Exception {
   StackTrace stackTrace;
 }
 
- class BaseErrorType<int> extends Enum<int> {
-   const BaseErrorType(int value) : super(value);
+class BaseErrorType<int> extends Enum<int> {
+  const BaseErrorType(int value) : super(value);
 
   /// Default error type, Some other Error. In this case, you can
   /// read the AmerErrorType.error if it is not null.
 
-  static const BaseErrorType DEFAULT   = const BaseErrorType(1);
-  static const BaseErrorType UNEXPECTED   = const BaseErrorType(2);
-  static const BaseErrorType SERVER_TIMEOUT   = const BaseErrorType(3);
-  static const BaseErrorType INVALID_RESPONSE   = const BaseErrorType(4);
-
+  static const BaseErrorType DEFAULT = const BaseErrorType(1);
+  static const BaseErrorType UNEXPECTED = const BaseErrorType(2);
+  static const BaseErrorType SERVER_TIMEOUT = const BaseErrorType(3);
+  static const BaseErrorType INVALID_RESPONSE = const BaseErrorType(4);
 }
-

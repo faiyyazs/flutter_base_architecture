@@ -6,8 +6,8 @@ import 'package:flutter_base_architecture/data/remote/model/response_dto.dart';
 import 'package:flutter_base_architecture/exception/base_error.dart';
 
 abstract class RESTResponse<T> {
-   static const String API_STATUS_SUCCESS = "success";
-   static const String API_STATUS_FAILURE = "failure";
+  static const String API_STATUS_SUCCESS = "success";
+  static const String API_STATUS_FAILURE = "failure";
 
   bool _status = false;
 
@@ -80,7 +80,9 @@ abstract class RESTResponse<T> {
           : false;
 
       if (_responseDto.code != 200) {
-        getErrors().add(BaseError(message: _responseDto.errors?.first?.toString(),type: BaseErrorType.DEFAULT));
+        getErrors().add(BaseError(
+            message: _responseDto.errors?.first?.toString(),
+            type: BaseErrorType.DEFAULT));
         return;
       }
       print("RESTResponse: " + _responseDto.data.toString());

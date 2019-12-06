@@ -34,9 +34,9 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
-  # To add assets to your package, add an assets section, like this:
-  #assets:
-    #- asset/drawable/menu.png
+    # To add assets to your package, add an assets section, like this:
+    #assets:
+  #- asset/drawable/menu.png
 
 
   # For details regarding assets in packages, see

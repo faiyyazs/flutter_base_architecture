@@ -5,7 +5,6 @@ import 'package:flutter_base_architecture/dto/base_dto.dart';
 import 'package:flutter_base_architecture/utils/session_manager.dart';
 
 abstract class UserStore<T extends BaseDto> {
-
   Future<bool> setUser(T userDto) async {
     var preference = await SessionManager.getInstance();
     return preference.setString(const_user, json.encode(userDto.toJson()));
@@ -24,7 +23,6 @@ abstract class UserStore<T extends BaseDto> {
   }
 
   T mapUserDto(decode);
-
 }
 
 /*class Test extends UserStore<UserDto> {
@@ -33,5 +31,3 @@ abstract class UserStore<T extends BaseDto> {
    return UserDto.map(decode);
   }
 }*/
-
-
