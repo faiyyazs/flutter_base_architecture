@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_base_architecture/constants/route_paths.dart';
 import 'package:flutter_base_architecture/data/local/sharedpreferences/user_stores.dart';
 import 'package:flutter_base_architecture/dto/user_dto.dart';
 import 'package:flutter_base_architecture/exception/base_error.dart';
@@ -20,7 +19,7 @@ abstract class BaseStatefulWidget extends StatefulWidget {
   const BaseStatefulWidget({Key key}) : super(key: key);
 }
 
-abstract class BaseState<T extends BaseStatefulWidget,ErrorParser extends BaseErrorParser, BaseViewModel>
+abstract class _BaseState<T extends BaseStatefulWidget,ErrorParser extends BaseErrorParser, BaseViewModel>
     extends State<T> {
   bool _requiresLogin = true;
   UserStore _userStore;
@@ -39,13 +38,15 @@ abstract class BaseState<T extends BaseStatefulWidget,ErrorParser extends BaseEr
       Future.delayed(Duration(seconds: 0), () {
         userIsLoggedIn().then((loggedIn) {
           if (!loggedIn) {
-            Navigator.pushReplacementNamed(context, RoutePaths.OnBoarding);
+            Navigator.pushReplacementNamed(context, onBoardingRoutePath());
             return;
           }
         });
       });
     }
   }
+
+  String onBoardingRoutePath();
 
   isRequiresLogin() {
     return _requiresLogin;
@@ -74,12 +75,11 @@ abstract class BaseState<T extends BaseStatefulWidget,ErrorParser extends BaseEr
 
   String getErrorMessage(BaseError errorType) {
     return _errorHandler.parseErrorType(context, errorType);
-    return widget?.handleError(context, errorType);
   }
 }
 
 abstract class BaseStatefulScreen<B extends BaseStatefulWidget,
-ErrorParser extends BaseErrorParser,VM extends BaseViewModel> extends BaseState<B,ErrorParser, VM> {
+ErrorParser extends BaseErrorParser,VM extends BaseViewModel> extends _BaseState<B,ErrorParser, VM> {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
   VM viewModel;
