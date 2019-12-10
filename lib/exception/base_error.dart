@@ -42,4 +42,5 @@ class BaseErrorType<int> extends Enum<int> {
   static const BaseErrorType UNEXPECTED = const BaseErrorType(2);
   static const BaseErrorType SERVER_TIMEOUT = const BaseErrorType(3);
   static const BaseErrorType INVALID_RESPONSE = const BaseErrorType(4);
+  static const BaseErrorType SERVER_MESSAGE = const BaseErrorType(5);
 }

@@ -10,7 +10,8 @@ abstract class RESTResponse<T> {
   static const String API_STATUS_FAILURE = "failure";
 
   bool _status = false;
-
+  String _message = "";
+  String get message => _message;
   bool get isSuccess => _status;
 
   List<BaseError> _errors = List<BaseError>();
@@ -21,17 +22,16 @@ abstract class RESTResponse<T> {
 
   RESTResponse(this.response) {
     try {
-      if (!this.response.extra.containsKey("exception") &&
-          this.response.data != null) {
-        print(this.response.data);
+      if (this.response.data != null) {
+        print(this.response.data.toString());
         _apiIdenfier =
             int.parse(this.response.headers.value("apiCallIdentifier"));
-        print("RESTResponse:: Encrypted " + this.response.data);
+        print("RESTResponse:: Encrypted " + this.response.data.toString());
         parseEncryptedResponse(this.response.data);
-      } else {
+      } else if (this.response.extra.containsKey("exception")) {
         print("Exception");
         throw this.response.extra["exception"]
-            as BaseError; //Exception(this.response.statusMessage);
+        as BaseError; //Exception(this.response.statusMessage);
       }
     } catch (error) {
       print("Response error>>>>>>>>>>" + error.toString());
@@ -73,16 +73,18 @@ abstract class RESTResponse<T> {
     print("RESTResponse:: Decrypted: " + response.toString());
     try {
       ResponseDto _responseDto =
-          ResponseDto.map(responseObject, this.response.statusCode);
+      ResponseDto.map(responseObject, this.response.statusCode);
 
       _status = _responseDto.status.toLowerCase() == API_STATUS_SUCCESS
           ? true
           : false;
 
+      _message = _responseDto.message.toString();
+
       if (_responseDto.code != 200) {
         getErrors().add(BaseError(
-            message: _responseDto.errors?.first?.toString(),
-            type: BaseErrorType.DEFAULT));
+            message: _responseDto.errors?.first.toString(),
+            type: BaseErrorType.SERVER_MESSAGE));
         return;
       }
       print("RESTResponse: " + _responseDto.data.toString());
