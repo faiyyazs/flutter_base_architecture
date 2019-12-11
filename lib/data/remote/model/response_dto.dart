@@ -20,8 +20,8 @@ class ResponseDto {
 
   ResponseDto.map(dynamic obj, int statusCode) {
     this._status = obj["status"];
-    //this._message = obj["message"];
-    this._code = statusCode; //200;//obj["code"];
+    this._message = obj["message"];
+    this._code = statusCode;
     this._data = obj["data"];
     this._errors = obj["errors"];
   }

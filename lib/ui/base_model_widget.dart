@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_base_architecture/exception/base_error.dart';
+import 'package:flutter_base_architecture/exception/base_error_handler.dart';
+import 'package:flutter_base_architecture/exception/base_error_parser.dart';
 import 'package:flutter_base_architecture/extensions/widget_extensions.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
 abstract class BaseModelWidget<T> extends Widget {
+
+  ErrorHandler<BaseErrorParser> _errorHandler;
+
   @protected
   Widget build(BuildContext context, T model);
 
@@ -28,7 +33,7 @@ abstract class BaseModelWidget<T> extends Widget {
   }
 
   String getErrorMessage(BuildContext context, BaseError error) {
-    return ""; //TO-DO
+    return _errorHandler.parseErrorType(context, error);
   }
 }
 
@@ -39,7 +44,11 @@ class DataProviderElement<T> extends ComponentElement {
   BaseModelWidget get widget => super.widget;
 
   @override
-  Widget build() => widget.build(this, Provider.of<T>(this));
+  Widget build() {
+    widget._errorHandler =
+        Provider.of<ErrorHandler<BaseErrorParser>>(this, listen: false);
+    return widget.build(this, Provider.of<T>(this));
+  }
 
   @override
   void update(BaseModelWidget newWidget) {
