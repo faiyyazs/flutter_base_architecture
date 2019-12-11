@@ -6,15 +6,15 @@ import 'package:flutter_base_architecture/extensions/widget_extensions.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
-abstract class BaseModelWidget<T> extends Widget {
+abstract class BaseModelWidget<T,ErrorParser extends BaseErrorParser> extends Widget {
 
-  ErrorHandler<BaseErrorParser> _errorHandler;
+  ErrorHandler<ErrorParser> _errorHandler;
 
   @protected
   Widget build(BuildContext context, T model);
 
   @override
-  DataProviderElement<T> createElement() => DataProviderElement<T>(this);
+  DataProviderElement<T,ErrorParser> createElement() => DataProviderElement<T,ErrorParser>(this);
 
   void showToastMessage(String message,
       {Toast toastLength,
@@ -37,7 +37,7 @@ abstract class BaseModelWidget<T> extends Widget {
   }
 }
 
-class DataProviderElement<T> extends ComponentElement {
+class DataProviderElement<T,ErrorParser extends BaseErrorParser> extends ComponentElement {
   DataProviderElement(BaseModelWidget widget) : super(widget);
 
   @override
@@ -46,7 +46,7 @@ class DataProviderElement<T> extends ComponentElement {
   @override
   Widget build() {
     widget._errorHandler =
-        Provider.of<ErrorHandler<BaseErrorParser>>(this, listen: false);
+        Provider.of<ErrorHandler<ErrorParser>>(this, listen: false);
     return widget.build(this, Provider.of<T>(this));
   }
 
