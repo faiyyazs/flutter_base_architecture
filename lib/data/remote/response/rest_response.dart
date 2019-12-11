@@ -18,6 +18,13 @@ abstract class RESTResponse<T> {
   List<T> _data = new List<T>();
   HashMap<String, dynamic> _dataFields = HashMap<String, dynamic>();
   int _apiIdenfier = -1;
+
+  int get apiIdenfier => _apiIdenfier;
+
+  set apiIdenfier(int value) {
+    _apiIdenfier = value;
+  }
+
   final Response response;
 
   RESTResponse(this.response) {
