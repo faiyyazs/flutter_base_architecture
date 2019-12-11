@@ -9,7 +9,6 @@ class BaseError implements Exception {
     this.message,
     this.type = BaseErrorType.DEFAULT,
     this.error,
-    this.stackTrace,
   });
 
   /// Error descriptions.
@@ -28,8 +27,6 @@ class BaseError implements Exception {
           (message ?? "") +
           (stackTrace ?? "").toString();*/
 
-  /// Error stacktrace info
-  StackTrace stackTrace;
 }
 
 class BaseErrorType<int> extends Enum<int> {

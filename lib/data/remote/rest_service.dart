@@ -48,7 +48,7 @@ class RESTService {
           return parseErrorResponse(e, apiCallIdentifier);
         }
       }, onResponse: (response) {
-        response.headers.add("apiCallIdentifier", apiCallIdentifier);
+        response.headers.add("apiCallIdentifier", apiCallIdentifier.toString());
       }));
       request.interceptors.add(LogInterceptor(responseBody: false));
 
@@ -79,8 +79,7 @@ class RESTService {
 
         default:
           throw DioError(
-              response: Response(headers: DioHttpHeaders()),
-              message: "Something went wrong. Please try again.");
+              response: Response(headers: Headers()),);
       }
     } catch (error, stacktrace) {
       print("Exception occured: $error stackTrace: $stacktrace");
@@ -117,40 +116,33 @@ class RESTService {
       switch (error.type) {
         case DioErrorType.CANCEL:
           amerError.type = BaseErrorType.DEFAULT;
-          amerError.stackTrace = error.stackTrace;
           amerError.message = "Request to API server was cancelled";
           break;
         case DioErrorType.CONNECT_TIMEOUT:
           amerError.type = BaseErrorType.SERVER_TIMEOUT;
-          amerError.stackTrace = error.stackTrace;
           amerError.message = "Connection timeout with API server";
           break;
         case DioErrorType.DEFAULT:
           amerError.type = BaseErrorType.DEFAULT;
-          amerError.stackTrace = error.stackTrace;
           amerError.message =
               "Connection to API server failed due to internet connection";
           break;
         case DioErrorType.RECEIVE_TIMEOUT:
           amerError.type = BaseErrorType.SERVER_TIMEOUT;
-          amerError.stackTrace = error.stackTrace;
           amerError.message = "Receive timeout in connection with API server";
           break;
         case DioErrorType.RESPONSE:
           amerError.type = BaseErrorType.INVALID_RESPONSE;
-          amerError.stackTrace = error.stackTrace;
           amerError.message =
               "Received invalid status code: ${error.response.statusCode}";
           break;
         case DioErrorType.SEND_TIMEOUT:
           amerError.type = BaseErrorType.SERVER_TIMEOUT;
-          amerError.stackTrace = error.stackTrace;
           amerError.message = "Receive timeout exception";
           break;
       }
     } else {
       amerError.type = BaseErrorType.UNEXPECTED;
-      amerError.stackTrace = null;
       amerError.message = "Unexpected error occured";
     }
     return amerError;
@@ -174,10 +166,10 @@ class RESTService {
         if (exception.response != null) {
           response = exception.response;
         } else {
-          response = Response(headers: DioHttpHeaders());
+          response = Response(headers: Headers());
         }
       } else {
-        response = Response(headers: DioHttpHeaders());
+        response = Response(headers: Headers());
       }
       //response.data = null;
       response.headers.set("apiCallIdentifier", apiCallIdentifier);
