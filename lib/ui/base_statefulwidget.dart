@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_base_architecture/data/local/sharedpreferences/user_stores.dart';
@@ -135,12 +136,25 @@ abstract class BaseStatefulScreen<
       child: BaseWidget<VM>(
           viewModel: getViewModel(),
           builder: (BuildContext context, VM model, Widget child) {
+
             return Scaffold(
               backgroundColor: scaffoldColor(),
               key: scaffoldKey,
               appBar: buildAppbar(),
               body: buildBody(),
-              resizeToAvoidBottomPadding: true,
+              resizeToAvoidBottomPadding: resizeToAvoidBottomPadding(),
+              bottomNavigationBar: buildBottomNavigationBar(),
+              floatingActionButton: floatingActionButton(),
+              floatingActionButtonLocation: floatingActionButtonLocation(),
+              floatingActionButtonAnimator: floatingActionButtonAnimator(),
+              persistentFooterButtons:persistentFooterButtons(),
+              drawer: drawer(),
+              endDrawer:endDrawer(),
+              bottomSheet:bottomSheet(),
+              resizeToAvoidBottomInset:resizeToAvoidBottomInset(),
+              drawerDragStartBehavior: drawerDragStartBehavior(),
+              drawerScrimColor:drawerScrimColor(),
+              drawerEdgeDragWidth:drawerEdgeDragWidth()
             );
           }),
     );
@@ -157,6 +171,60 @@ abstract class BaseStatefulScreen<
 
   /// Should be overridden in extended widget
   Widget buildBody();
+
+  Widget buildBottomNavigationBar(){
+    return null;
+  }
+
+
+  Widget floatingActionButton(){
+    return null;
+  }
+
+  FloatingActionButtonLocation floatingActionButtonLocation(){
+    return FloatingActionButtonLocation.endFloat;
+  }
+
+  FloatingActionButtonAnimator floatingActionButtonAnimator(){
+    return null;
+  }
+
+  List<Widget> persistentFooterButtons(){
+    return null;
+  }
+
+  Widget drawer(){
+    return null;
+  }
+
+  Widget endDrawer(){
+    return null;
+  }
+
+  Widget bottomSheet(){
+    return null;
+  }
+
+  bool resizeToAvoidBottomPadding(){
+    return true;
+  }
+
+  bool resizeToAvoidBottomInset(){
+    return true;
+  }
+
+  DragStartBehavior drawerDragStartBehavior(){
+    return DragStartBehavior.start;
+  }
+
+  Color drawerScrimColor(){
+    return Colors.black54;
+  }
+
+  double drawerEdgeDragWidth(){
+    return 20.0;
+  }
+
 
   VM initViewModel();
 
