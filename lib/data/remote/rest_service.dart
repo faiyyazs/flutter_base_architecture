@@ -172,7 +172,7 @@ class RESTService {
         response = Response(headers: Headers());
       }
       //response.data = null;
-      response.headers.set("apiCallIdentifier", apiCallIdentifier);
+      response.headers.set("apiCallIdentifier", apiCallIdentifier.toString());
       //response.statusMessage = _handleError(exception);
       response.extra = Map();
       response.extra.putIfAbsent("exception", () => _handleError(exception));
