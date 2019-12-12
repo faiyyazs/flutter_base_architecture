@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_base_architecture/data/local/sharedpreferences/user_stores.dart';
+import 'package:flutter_base_architecture/dto/base_dto.dart';
 import 'package:flutter_base_architecture/dto/user_dto.dart';
 import 'package:flutter_base_architecture/exception/base_error.dart';
 import 'package:flutter_base_architecture/exception/base_error_handler.dart';
@@ -20,9 +21,9 @@ abstract class BaseStatefulWidget extends StatefulWidget {
 }
 
 abstract class _BaseState<T extends BaseStatefulWidget,
-    ErrorParser extends BaseErrorParser, BaseViewModel> extends State<T> {
+    ErrorParser extends BaseErrorParser, BaseViewModel,User extends BaseDto> extends State<T> {
   bool _requiresLogin = true;
-  UserStore _userStore;
+  UserStore<User> _userStore;
   ErrorHandler<ErrorParser> _errorHandler;
 
   @override
@@ -54,8 +55,8 @@ abstract class _BaseState<T extends BaseStatefulWidget,
     this._requiresLogin = requiresLogin;
   }
 
-  Future<bool> setUser(UserDto userDto) async {
-    return await _userStore.setUser(userDto);
+  Future<bool> setUser(User user) async {
+    return await _userStore.setUser(user);
   }
 
   @protected
@@ -63,7 +64,7 @@ abstract class _BaseState<T extends BaseStatefulWidget,
     return await _userStore.userIsLoggedIn();
   }
 
-  Future<UserDto> getLoggedInUser() async {
+  Future<User> getLoggedInUser() async {
     return await _userStore.getLoggedInUserJson();
   }
 
@@ -91,7 +92,7 @@ abstract class _BaseState<T extends BaseStatefulWidget,
 abstract class BaseStatefulScreen<
     B extends BaseStatefulWidget,
     ErrorParser extends BaseErrorParser,
-    VM extends BaseViewModel> extends _BaseState<B, ErrorParser, VM> {
+    VM extends BaseViewModel,User extends BaseDto> extends _BaseState<B, ErrorParser, VM,User> {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
   VM viewModel;
