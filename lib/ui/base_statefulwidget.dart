@@ -16,10 +16,7 @@ import 'base_widget.dart';
 
 /// Every StatefulWidget should be inherited from this
 abstract class BaseStatefulWidget<VM extends BaseViewModel> extends StatefulWidget {
-
-  VM viewModel;
-
-  BaseStatefulWidget({Key key,VM viewModel}) : super(key: key);
+  BaseStatefulWidget({Key key}) : super(key: key);
 }
 
 abstract class _BaseState<
@@ -101,6 +98,7 @@ abstract class BaseStatefulScreen<
     User extends BaseDto> extends _BaseState<VM,B, ErrorParser, User> {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
+  VM viewModel;
 
   BaseStatefulScreen();
 
@@ -113,8 +111,8 @@ abstract class BaseStatefulScreen<
   void didChangeDependencies() {
     super.didChangeDependencies();
     //viewModel = Provider.of(context);
-    if (widget.viewModel == null || getViewModel() != widget.viewModel) {
-      widget.viewModel = initViewModel();
+    if (viewModel == null || getViewModel() != viewModel) {
+      viewModel = initViewModel();
     }
   }
 
@@ -133,7 +131,7 @@ abstract class BaseStatefulScreen<
   }
 
   VM getViewModel() {
-    return widget.viewModel;
+    return viewModel;
   }
 
   Widget getLayout() {
