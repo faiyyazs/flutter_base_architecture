@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_base_architecture/data/local/sharedpreferences/user_stores.dart';
 import 'package:flutter_base_architecture/dto/base_dto.dart';
+import 'package:flutter_base_architecture/dto/user_dto.dart';
 import 'package:flutter_base_architecture/exception/base_error.dart';
 import 'package:flutter_base_architecture/exception/base_error_handler.dart';
 import 'package:flutter_base_architecture/exception/base_error_parser.dart';
