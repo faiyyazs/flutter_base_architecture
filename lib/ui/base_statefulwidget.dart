@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_base_architecture/data/local/sharedpreferences/user_stores.dart';
 import 'package:flutter_base_architecture/dto/base_dto.dart';
-import 'package:flutter_base_architecture/dto/user_dto.dart';
 import 'package:flutter_base_architecture/exception/base_error.dart';
 import 'package:flutter_base_architecture/exception/base_error_handler.dart';
 import 'package:flutter_base_architecture/exception/base_error_parser.dart';
@@ -16,12 +15,18 @@ import 'base_error_widget.dart';
 import 'base_widget.dart';
 
 /// Every StatefulWidget should be inherited from this
-abstract class BaseStatefulWidget extends StatefulWidget {
-  const BaseStatefulWidget({Key key}) : super(key: key);
+abstract class BaseStatefulWidget<VM extends BaseViewModel> extends StatefulWidget {
+
+  VM viewModel;
+
+  BaseStatefulWidget({Key key,VM viewModel}) : super(key: key);
 }
 
-abstract class _BaseState<T extends BaseStatefulWidget,
-    ErrorParser extends BaseErrorParser, BaseViewModel,User extends BaseDto> extends State<T> {
+abstract class _BaseState<
+    VM extends BaseViewModel,
+    T extends BaseStatefulWidget<VM>,
+    ErrorParser extends BaseErrorParser,
+    User extends BaseDto> extends State<T> {
   bool _requiresLogin = true;
   UserStore<User> _userStore;
   ErrorHandler<ErrorParser> _errorHandler;
@@ -90,12 +95,12 @@ abstract class _BaseState<T extends BaseStatefulWidget,
 }
 
 abstract class BaseStatefulScreen<
-    B extends BaseStatefulWidget,
+    VM extends BaseViewModel,
+    B extends BaseStatefulWidget<VM>,
     ErrorParser extends BaseErrorParser,
-    VM extends BaseViewModel,User extends BaseDto> extends _BaseState<B, ErrorParser, VM,User> {
+    User extends BaseDto> extends _BaseState<VM,B, ErrorParser, User> {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
-  VM viewModel;
 
   BaseStatefulScreen();
 
@@ -108,7 +113,9 @@ abstract class BaseStatefulScreen<
   void didChangeDependencies() {
     super.didChangeDependencies();
     //viewModel = Provider.of(context);
-    viewModel = initViewModel();
+    if (widget.viewModel == null || getViewModel() != widget.viewModel) {
+      widget.viewModel = initViewModel();
+    }
   }
 
   @override
@@ -126,7 +133,7 @@ abstract class BaseStatefulScreen<
   }
 
   VM getViewModel() {
-    return viewModel;
+    return widget.viewModel;
   }
 
   Widget getLayout() {
@@ -137,26 +144,24 @@ abstract class BaseStatefulScreen<
       child: BaseWidget<VM>(
           viewModel: getViewModel(),
           builder: (BuildContext context, VM model, Widget child) {
-
             return Scaffold(
-              backgroundColor: scaffoldColor(),
-              key: scaffoldKey,
-              appBar: buildAppbar(),
-              body: buildBody(),
-              resizeToAvoidBottomPadding: resizeToAvoidBottomPadding(),
-              bottomNavigationBar: buildBottomNavigationBar(),
-              floatingActionButton: floatingActionButton(),
-              floatingActionButtonLocation: floatingActionButtonLocation(),
-              floatingActionButtonAnimator: floatingActionButtonAnimator(),
-              persistentFooterButtons:persistentFooterButtons(),
-              drawer: drawer(),
-              endDrawer:endDrawer(),
-              bottomSheet:bottomSheet(),
-              resizeToAvoidBottomInset:resizeToAvoidBottomInset(),
-              drawerDragStartBehavior: drawerDragStartBehavior(),
-              drawerScrimColor:drawerScrimColor(),
-              drawerEdgeDragWidth:drawerEdgeDragWidth()
-            );
+                backgroundColor: scaffoldColor(),
+                key: scaffoldKey,
+                appBar: buildAppbar(),
+                body: buildBody(),
+                resizeToAvoidBottomPadding: resizeToAvoidBottomPadding(),
+                bottomNavigationBar: buildBottomNavigationBar(),
+                floatingActionButton: floatingActionButton(),
+                floatingActionButtonLocation: floatingActionButtonLocation(),
+                floatingActionButtonAnimator: floatingActionButtonAnimator(),
+                persistentFooterButtons: persistentFooterButtons(),
+                drawer: drawer(),
+                endDrawer: endDrawer(),
+                bottomSheet: bottomSheet(),
+                resizeToAvoidBottomInset: resizeToAvoidBottomInset(),
+                drawerDragStartBehavior: drawerDragStartBehavior(),
+                drawerScrimColor: drawerScrimColor(),
+                drawerEdgeDragWidth: drawerEdgeDragWidth());
           }),
     );
   }
@@ -173,59 +178,57 @@ abstract class BaseStatefulScreen<
   /// Should be overridden in extended widget
   Widget buildBody();
 
-  Widget buildBottomNavigationBar(){
+  Widget buildBottomNavigationBar() {
     return null;
   }
 
-
-  Widget floatingActionButton(){
+  Widget floatingActionButton() {
     return null;
   }
 
-  FloatingActionButtonLocation floatingActionButtonLocation(){
+  FloatingActionButtonLocation floatingActionButtonLocation() {
     return FloatingActionButtonLocation.endFloat;
   }
 
-  FloatingActionButtonAnimator floatingActionButtonAnimator(){
+  FloatingActionButtonAnimator floatingActionButtonAnimator() {
     return null;
   }
 
-  List<Widget> persistentFooterButtons(){
+  List<Widget> persistentFooterButtons() {
     return null;
   }
 
-  Widget drawer(){
+  Widget drawer() {
     return null;
   }
 
-  Widget endDrawer(){
+  Widget endDrawer() {
     return null;
   }
 
-  Widget bottomSheet(){
+  Widget bottomSheet() {
     return null;
   }
 
-  bool resizeToAvoidBottomPadding(){
+  bool resizeToAvoidBottomPadding() {
     return true;
   }
 
-  bool resizeToAvoidBottomInset(){
+  bool resizeToAvoidBottomInset() {
     return true;
   }
 
-  DragStartBehavior drawerDragStartBehavior(){
+  DragStartBehavior drawerDragStartBehavior() {
     return DragStartBehavior.start;
   }
 
-  Color drawerScrimColor(){
+  Color drawerScrimColor() {
     return Colors.black54;
   }
 
-  double drawerEdgeDragWidth(){
+  double drawerEdgeDragWidth() {
     return 20.0;
   }
-
 
   VM initViewModel();
 
