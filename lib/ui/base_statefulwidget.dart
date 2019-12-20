@@ -70,6 +70,11 @@ abstract class _BaseState<
     return await _userStore.getLoggedInUserJson();
   }
 
+
+  Future<bool> removeLoggedInUser() async {
+    return await _userStore.removeUser();
+  }
+
   void showToastMessage(String message,
       {Toast toastLength,
       ToastGravity gravity,
