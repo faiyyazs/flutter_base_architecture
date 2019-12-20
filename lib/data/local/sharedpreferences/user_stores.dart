@@ -22,6 +22,11 @@ abstract class UserStore<T extends BaseDto> {
         : null;
   }
 
+  Future<bool> removeUser() async {
+    var preference = await SessionManager.getInstance();
+    return preference.remove(const_user);
+  }
+
   T mapUserDto(decode);
 }
 
