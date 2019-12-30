@@ -78,9 +78,16 @@ class RESTService {
           return parseResponse(response, apiCallIdentifier);
           break;
 
+        case RESTService.DELETE:
+          Future<Response> response =
+              request.delete(action, data: paramstoJson(parameters));
+          return parseResponse(response, apiCallIdentifier);
+          break;
+
         default:
           throw DioError(
-              response: Response(headers: Headers()),);
+            response: Response(headers: Headers()),
+          );
       }
     } catch (error, stacktrace) {
       print("Exception occured: $error stackTrace: $stacktrace");
@@ -194,5 +201,7 @@ class RESTService {
     return parameters;
   }
 
-  Map<String,dynamic> getHeaders() {return null;}
+  Map<String, dynamic> getHeaders() {
+    return null;
+  }
 }
