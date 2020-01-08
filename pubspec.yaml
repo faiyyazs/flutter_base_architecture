@@ -1,11 +1,11 @@
 name: flutter_base_architecture
 description: A base framework to start with flutter
-version: 0.0.1
+version: 0.0.2
 author: Faiyyaz Shaikh
 homepage: "https://github.com/faiyyazs/"
 
 environment:
-  sdk: ">=2.6.0-dev.0.0.flutter-1103600280 <3.0.0"
+  sdk: ">=2.6.0 <3.0.0"
 
 dependencies:
   flutter:
