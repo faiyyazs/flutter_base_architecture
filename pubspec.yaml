@@ -5,12 +5,12 @@ author: Faiyyaz Shaikh
 homepage: "https://github.com/faiyyazs/"
 
 environment:
-  sdk: ">=2.6.0-dev.0.0.flutter-1103600280 <3.0.0"
+  sdk: ">=2.6.0 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  provider: ^3.1.0
+  provider: ^4.0.0
   fluttertoast: ^3.1.0
   shared_preferences: ^0.5.3+4
   connectivity: ^0.4.3+7
