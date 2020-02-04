@@ -8,6 +8,7 @@ class RESTService {
   static const int POST = 2;
   static const int PUT = 3;
   static const int DELETE = 4;
+  static const int FORMDATA = 5;
   static const String data = "data";
   static const String EXTRA_HTTP_VERB = "EXTRA_HTTP_VERB";
   static const String REST_API_CALL_IDENTIFIER = "REST_API_CALL_IDENTIFIER";
@@ -71,6 +72,11 @@ class RESTService {
           //  Future<Response> response = request.post(action,data: paramsToJson(parameters));
           return parseResponse(response, apiCallIdentifier);
         // return request.post(action,data: paramsToJson(parameters));
+
+        case RESTService.FORMDATA:
+          FormData formData = FormData.fromMap(parameters);
+          Future<Response> response = request.post(action, data: formData);
+          return parseResponse(response, apiCallIdentifier);
 
         case RESTService.PUT:
           Future<Response> response =
