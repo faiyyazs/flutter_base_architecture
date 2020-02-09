@@ -65,7 +65,7 @@ class RESTService {
 
         case RESTService.URI:
           Future<Response> response = request.getUri(Uri(
-              path: action, queryParameters: attachUriWithQuery(parameters)));
+              host: action, queryParameters: attachUriWithQuery(parameters)));
           return parseResponse(response, apiCallIdentifier);
 
         // return request.get(action, queryParameters: attachUriWithQuery(parameters));
