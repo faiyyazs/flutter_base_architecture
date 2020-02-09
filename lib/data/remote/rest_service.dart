@@ -9,6 +9,7 @@ class RESTService {
   static const int PUT = 3;
   static const int DELETE = 4;
   static const int FORMDATA = 5;
+  static const int URI = 6;
   static const String data = "data";
   static const String EXTRA_HTTP_VERB = "EXTRA_HTTP_VERB";
   static const String REST_API_CALL_IDENTIFIER = "REST_API_CALL_IDENTIFIER";
@@ -60,6 +61,11 @@ class RESTService {
         case RESTService.GET:
           Future<Response> response = request.get(action,
               queryParameters: attachUriWithQuery(parameters));
+          return parseResponse(response, apiCallIdentifier);
+
+        case RESTService.URI:
+          Future<Response> response = request.getUri(Uri(
+              path: action, queryParameters: attachUriWithQuery(parameters)));
           return parseResponse(response, apiCallIdentifier);
 
         // return request.get(action, queryParameters: attachUriWithQuery(parameters));
