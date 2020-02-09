@@ -7,8 +7,11 @@ abstract class RESTRequest {
 
   String apiUrl;
   String _apiKey;
+  String schema;
+  String host;
 
-  RESTRequest(this._service, {this.apiUrl = "http://google.com"}) {
+  RESTRequest(this._service,
+      {this.apiUrl = "", this.schema: "http", this.host: ""}) {
     this._apiKey = "";
   }
 
@@ -25,7 +28,9 @@ abstract class RESTRequest {
 
     Map<String, dynamic> extraParams = Map();
     extraParams.putIfAbsent(RESTService.data, () {
-      return buffer.toString();
+      return apiCallMethod == RESTService.URI
+          ? Uri(scheme: schema, host: host, path: endpoint)
+          : buffer.toString();
     });
     extraParams.putIfAbsent(RESTService.EXTRA_HTTP_VERB, () {
       return apiCallMethod;

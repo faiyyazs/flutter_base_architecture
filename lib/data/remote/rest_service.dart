@@ -16,7 +16,7 @@ class RESTService {
   static const String EXTRA_PARAMS = "EXTRA_PARAMS";
 
   Future<Response> onHandleIntent(Map<String, dynamic> params) async {
-    String action = params.putIfAbsent(data, () {});
+    dynamic action = params.putIfAbsent(data, () {});
     int verb = params.putIfAbsent(EXTRA_HTTP_VERB, () {
       return GET;
     });
@@ -64,15 +64,14 @@ class RESTService {
           return parseResponse(response, apiCallIdentifier);
 
         case RESTService.URI:
-          Future<Response> response = request.getUri(Uri.http(
-              action.replaceAll('/^https?:\/\//', ''),
-              "",
-              {"category_id": "1", "category_id": "2"}));
-          /*     attachUriWithQuery(parameters)
-                  .map((key, value) => MapEntry(key, value.toString()))));*/
-          return parseResponse(response, apiCallIdentifier);
+          Uri uri = action as Uri;
+          Future<Response> response = request.getUri(Uri(
+              scheme: uri.scheme,
+              host: uri.host,
+              path: uri.path,
+              queryParameters: attachUriWithQuery(parameters)));
 
-        // return request.get(action, queryParameters: attachUriWithQuery(parameters));
+          return parseResponse(response, apiCallIdentifier);
 
         case RESTService.POST:
           /* request.options.contentType =
@@ -131,6 +130,75 @@ class RESTService {
       }*/
 
     }
+  }
+
+  static Uri _makeHttpUri(String scheme, String authority, String unencodedPath,
+      Map<String, dynamic> queryParameters) {
+    var userInfo = "";
+    String host;
+    int port;
+
+    if (authority != null && authority.isNotEmpty) {
+      var hostStart = 0;
+      // Split off the user info.
+      bool hasUserInfo = false;
+      for (int i = 0; i < authority.length; i++) {
+        const int atSign = 0x40;
+        if (authority.codeUnitAt(i) == atSign) {
+          hasUserInfo = true;
+          userInfo = authority.substring(0, i);
+          hostStart = i + 1;
+          break;
+        }
+      }
+
+      var hostEnd = hostStart;
+      if (hostStart < authority.length &&
+          authority.codeUnitAt(hostStart) == _LEFT_BRACKET) {
+        // IPv6 host.
+        int escapeForZoneID = -1;
+        for (; hostEnd < authority.length; hostEnd++) {
+          int char = authority.codeUnitAt(hostEnd);
+          if (char == _PERCENT && escapeForZoneID < 0) {
+            escapeForZoneID = hostEnd;
+            if (authority.startsWith("25", hostEnd + 1)) {
+              hostEnd += 2; // Might as well skip the already checked escape.
+            }
+          } else if (char == _RIGHT_BRACKET) {
+            break;
+          }
+        }
+        if (hostEnd == authority.length) {
+          throw FormatException(
+              "Invalid IPv6 host entry.", authority, hostStart);
+        }
+        Uri.parseIPv6Address(authority, hostStart + 1,
+            (escapeForZoneID < 0) ? hostEnd : escapeForZoneID);
+        hostEnd++; // Skip the closing bracket.
+        if (hostEnd != authority.length &&
+            authority.codeUnitAt(hostEnd) != _COLON) {
+          throw FormatException("Invalid end of authority", authority, hostEnd);
+        }
+      }
+      // Split host and port.
+      bool hasPort = false;
+      for (; hostEnd < authority.length; hostEnd++) {
+        if (authority.codeUnitAt(hostEnd) == _COLON) {
+          var portString = authority.substring(hostEnd + 1);
+          // We allow the empty port - falling back to initial value.
+          if (portString.isNotEmpty) port = int.parse(portString);
+          break;
+        }
+      }
+      host = authority.substring(hostStart, hostEnd);
+    }
+    return Uri(
+        scheme: scheme,
+        userInfo: userInfo,
+        host: host,
+        port: port,
+        pathSegments: unencodedPath.split("/"),
+        queryParameters: queryParameters);
   }
 
   BaseError _handleError(Exception error) {
@@ -221,3 +289,23 @@ class RESTService {
     return null;
   }
 }
+
+// Frequently used character codes.
+const int _SPACE = 0x20;
+const int _PERCENT = 0x25;
+const int _AMPERSAND = 0x26;
+const int _PLUS = 0x2B;
+const int _DOT = 0x2E;
+const int _SLASH = 0x2F;
+const int _COLON = 0x3A;
+const int _EQUALS = 0x3d;
+const int _UPPER_CASE_A = 0x41;
+const int _UPPER_CASE_Z = 0x5A;
+const int _LEFT_BRACKET = 0x5B;
+const int _BACKSLASH = 0x5C;
+const int _RIGHT_BRACKET = 0x5D;
+const int _LOWER_CASE_A = 0x61;
+const int _LOWER_CASE_F = 0x66;
+const int _LOWER_CASE_Z = 0x7A;
+
+const String _hexDigits = "0123456789ABCDEF";
