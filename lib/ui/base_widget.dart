@@ -16,9 +16,9 @@ class BaseWidget<T extends ChangeNotifier> extends StatefulWidget {
       this.child,
       this.onModelReady,
       this.duration: const Duration(
-        milliseconds: 800,
+        milliseconds: 600,
       ),
-      this.animate: true})
+      this.animate: false})
       : super(key: key);
 
   @override
@@ -33,11 +33,11 @@ class _BaseWidget<T extends ChangeNotifier> extends State<BaseWidget<T>>
 
   @override
   void initState() {
-    _controller = AnimationController(vsync: this, duration: widget.duration);
-    if (widget.animate) {
-      _controller.forward(from: 0.0);
-    }
     super.initState();
+    _controller = AnimationController(
+        vsync: this,
+        duration: widget.animate ? widget.duration : Duration(milliseconds: 0));
+    _controller.forward(from: 0.0);
     _model = widget.viewModel;
     duration = widget.duration;
 
@@ -53,29 +53,23 @@ class _BaseWidget<T extends ChangeNotifier> extends State<BaseWidget<T>>
   }
 
   @override
-  void didUpdateWidget(Widget oldWidget) {
-    if (widget != oldWidget && widget.animate) {
-      _controller.forward(from: 0.0);
-    }
-    super.didUpdateWidget(oldWidget);
-  }
-
-  @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<T>.value(
       value: _model,
       child: Consumer<T>(
-        builder: widget.builder,
-        child: AnimatedBuilder(
-          animation: _controller,
-          builder: (context, child) {
-            return Opacity(
-              opacity: _controller.value,
-              child: child,
-            );
-          },
-          child: widget.child,
-        ),
+        builder: (context, model, child) {
+          _controller.forward(from: 0.0);
+          return AnimatedBuilder(
+              builder: (context, child) {
+                return Opacity(
+                  opacity: _controller.value,
+                  child: child,
+                );
+              },
+              animation: _controller,
+              child: widget.builder(context, model, child));
+        },
+        child: widget.child,
       ),
     );
   }
