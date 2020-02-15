@@ -33,7 +33,7 @@ class _BaseWidget<T extends ChangeNotifier> extends State<BaseWidget<T>>
 
   @override
   void initState() {
-    _controller = AnimationController(vsync: this, duration: duration);
+    _controller = AnimationController(vsync: this, duration: widget.duration);
     if (widget.animate) {
       _controller.forward(from: 0.0);
     }
