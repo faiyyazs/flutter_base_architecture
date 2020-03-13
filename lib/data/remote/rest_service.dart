@@ -32,7 +32,9 @@ class RESTService {
           .add(InterceptorsWrapper(onRequest: (Options options) async {
         //Set the token to headers
         options.headers["apiCallIdentifier"] = apiCallIdentifier;
-        options.headers.addAll(getHeaders());
+        if (getHeaders() != null) {
+          options.headers.addAll(getHeaders());
+        }
         // options.headers["token"] = "spbxfk4uvqwtft62l6ljwkvtk9qkqk5r";
         return options; //continue
       }, onError: (DioError e) async {
