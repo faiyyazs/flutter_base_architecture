@@ -48,7 +48,9 @@ class RESTService {
         ..add(InterceptorsWrapper(onRequest: (Options options) async {
           //Set the token to headers
           options.headers["apiCallIdentifier"] = apiCallIdentifier;
-          options.headers.addAll(getHeaders());
+          if (getHeaders() != null) {
+            options.headers.addAll(getHeaders());
+          }
           options.extra.addAll(
               buildCacheOptions(Duration(days: 7), forceRefresh: forceRefresh)
                   .extra);
