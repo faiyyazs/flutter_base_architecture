@@ -11,7 +11,9 @@ abstract class RESTResponse<T> {
 
   bool _status = false;
   String _message = "";
+
   String get message => _message;
+
   bool get isSuccess => _status;
 
   List<BaseError> _errors = List<BaseError>();
@@ -29,21 +31,24 @@ abstract class RESTResponse<T> {
 
   RESTResponse(this.response) {
     try {
-      if (this.response.data != null) {
+      if (this.response?.data != null) {
         print(this.response.data.toString());
-        _apiIdenfier =
-            int.parse(this.response.headers.value("apiCallIdentifier"));
+        _apiIdenfier = response?.extra["apiCallIdentifier"];
+        print("_apiIdenfier" + _apiIdenfier?.toString());
+        print("cached: " + response?.extra["cached"]?.toString());
         print("RESTResponse:: Encrypted " + this.response.data.toString());
         parseEncryptedResponse(this.response.data);
       } else if (this.response.extra.containsKey("exception")) {
         print("Exception");
         throw this.response.extra["exception"]
-        as BaseError; //Exception(this.response.statusMessage);
+            as BaseError; //Exception(this.response.statusMessage);
       }
     } catch (error) {
       print("Response error>>>>>>>>>>" + error.toString());
-      //getErrors().add("Something went wrong. PLease try again");
-      getErrors().add(error);
+      getErrors().add(BaseError(
+          error: error,
+          message: error.toString(),
+          type: BaseErrorType.UNEXPECTED));
     }
   }
 
@@ -80,7 +85,7 @@ abstract class RESTResponse<T> {
     print("RESTResponse:: Decrypted: " + response.toString());
     try {
       ResponseDto _responseDto =
-      ResponseDto.map(responseObject, this.response.statusCode);
+          ResponseDto.map(responseObject, this.response.statusCode);
 
       _status = _responseDto.status.toLowerCase() == API_STATUS_SUCCESS
           ? true

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
-class OrientationLayout extends StatelessWidget {
-  final Widget Function(BuildContext) landscape;
-  final Widget Function(BuildContext) portrait;
+/// Provides a builder function for a landscape and portrait widget
+class OrientationLayoutBuilder extends StatelessWidget {
+  final WidgetBuilder landscape;
+  final WidgetBuilder portrait;
 
-  const OrientationLayout({
+  const OrientationLayoutBuilder({
     Key key,
     this.landscape,
     this.portrait,
@@ -12,8 +13,8 @@ class OrientationLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, boxConstraints) {
+    return Builder(
+      builder: (context) {
         var orientation = MediaQuery.of(context).orientation;
         if (orientation == Orientation.landscape) {
           if (landscape != null) {
