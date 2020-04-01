@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:dio_http_cache/dio_http_cache.dart';
 import 'package:flutter_base_architecture/exception/base_error.dart';
 
 class RESTService {
@@ -8,19 +9,34 @@ class RESTService {
   static const int POST = 2;
   static const int PUT = 3;
   static const int DELETE = 4;
+  static const int FORMDATA = 5;
+  static const int URI = 6;
   static const String data = "data";
+  static const String API_URL = "APIURL";
+  static const String EXTRA_FORCE_REFRESH = "EXTRA_FORCE_REFRESH";
   static const String EXTRA_HTTP_VERB = "EXTRA_HTTP_VERB";
   static const String REST_API_CALL_IDENTIFIER = "REST_API_CALL_IDENTIFIER";
   static const String EXTRA_PARAMS = "EXTRA_PARAMS";
 
   Future<Response> onHandleIntent(Map<String, dynamic> params) async {
-    String action = params.putIfAbsent(data, () {});
+    dynamic action = params.putIfAbsent(data, () {});
+
     int verb = params.putIfAbsent(EXTRA_HTTP_VERB, () {
       return GET;
     });
+
+    String apiUrl = params.putIfAbsent(API_URL, () {
+      return "";
+    });
+
+    bool forceRefresh = params.putIfAbsent(EXTRA_FORCE_REFRESH, () {
+      return false;
+    });
+
     int apiCallIdentifier = params.putIfAbsent(REST_API_CALL_IDENTIFIER, () {
       return -1;
     });
+
     Map<String, dynamic> parameters = params.putIfAbsent(EXTRA_PARAMS, () {
       return null;
     });
@@ -28,29 +44,43 @@ class RESTService {
     try {
       Dio request = Dio();
       request.interceptors
-          .add(InterceptorsWrapper(onRequest: (Options options) async {
-        //Set the token to headers
-        options.headers["apiCallIdentifier"] = apiCallIdentifier;
-        options.headers.addAll(getHeaders());
-        // options.headers["token"] = "spbxfk4uvqwtft62l6ljwkvtk9qkqk5r";
-        return options; //continue
-      }, onError: (DioError e) async {
-        print("RESTService:: onError: " + e.toString());
-        if (e.response != null) {
-          print(e.response.data);
-          print(e.response.headers);
-          print(e.response.request);
+        ..add(DioCacheManager(CacheConfig(baseUrl: apiUrl)).interceptor)
+        ..add(InterceptorsWrapper(onRequest: (Options options) async {
+          //Set the token to headers
+          options.headers["apiCallIdentifier"] = apiCallIdentifier;
+          if (getHeaders() != null) {
+            options.headers.addAll(getHeaders());
+          }
+          options.extra.addAll(
+              buildCacheOptions(Duration(days: 7), forceRefresh: forceRefresh)
+                  .extra);
+          options.extra.update("apiCallIdentifier", (value) => value,
+              ifAbsent: () => apiCallIdentifier);
+          options.extra
+              .update("cached", (value) => value, ifAbsent: () => true);
 
-          return parseErrorResponse(e, apiCallIdentifier);
-        } else {
-          // Something happened in setting up or sending the request that triggered an Error
-          print(e.request);
-          print(e.message);
-          return parseErrorResponse(e, apiCallIdentifier);
-        }
-      }, onResponse: (response) {
-        response.headers.add("apiCallIdentifier", apiCallIdentifier.toString());
-      }));
+          return options; //continue
+        }, onError: (DioError e) async {
+          if (e.response != null) {
+            print(e.response.data);
+            print(e.response.headers);
+            print(e.response.request);
+
+            return parseErrorResponse(e, apiCallIdentifier);
+          } else {
+            // Something happened in setting up or sending the request that triggered an Error
+            print(e.request);
+            print(e.message);
+            return parseErrorResponse(e, apiCallIdentifier);
+          }
+        }, onResponse: (response) {
+          response.headers
+              .add("apiCallIdentifier", apiCallIdentifier.toString());
+          response.extra.update("apiCallIdentifier", (value) => value,
+              ifAbsent: () => apiCallIdentifier);
+          response.extra
+              .update("cached", (value) => false, ifAbsent: () => false);
+        }));
       request.interceptors.add(LogInterceptor(responseBody: false));
 
       logParams(parameters);
@@ -61,7 +91,15 @@ class RESTService {
               queryParameters: attachUriWithQuery(parameters));
           return parseResponse(response, apiCallIdentifier);
 
-        // return request.get(action, queryParameters: attachUriWithQuery(parameters));
+        case RESTService.URI:
+          Uri uri = action as Uri;
+          Future<Response> response = request.getUri(Uri(
+              scheme: uri.scheme,
+              host: uri.host,
+              path: uri.path,
+              queryParameters: attachUriWithQuery(parameters)));
+
+          return parseResponse(response, apiCallIdentifier);
 
         case RESTService.POST:
           /* request.options.contentType =
@@ -71,6 +109,11 @@ class RESTService {
           //  Future<Response> response = request.post(action,data: paramsToJson(parameters));
           return parseResponse(response, apiCallIdentifier);
         // return request.post(action,data: paramsToJson(parameters));
+
+        case RESTService.FORMDATA:
+          FormData formData = FormData.fromMap(parameters);
+          Future<Response> response = request.post(action, data: formData);
+          return parseResponse(response, apiCallIdentifier);
 
         case RESTService.PUT:
           Future<Response> response =
@@ -181,9 +224,13 @@ class RESTService {
       }
       //response.data = null;
       response.headers.set("apiCallIdentifier", apiCallIdentifier.toString());
+
       //response.statusMessage = _handleError(exception);
       response.extra = Map();
       response.extra.putIfAbsent("exception", () => _handleError(exception));
+      response.extra.update("apiCallIdentifier", (value) => value,
+          ifAbsent: () => apiCallIdentifier);
+      response.extra.update("cached", (value) => false, ifAbsent: () => false);
       return response;
     });
   }
