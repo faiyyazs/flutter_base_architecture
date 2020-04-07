@@ -218,7 +218,7 @@ class RESTService {
     return amerError;
   }
 
-  logParams(Map<String, dynamic> params) {
+  logParams(dynamic params) {
     print("Parameters:");
     print("$params");
   }

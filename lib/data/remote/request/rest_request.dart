@@ -15,8 +15,8 @@ abstract class RESTRequest {
     this._apiKey = "";
   }
 
-  Future<Response> execute(String endpoint, Map<String, dynamic> params,
-      int apiCallMethod, int apiIdentifier,
+  Future<Response> execute(
+      String endpoint, dynamic params, int apiCallMethod, int apiIdentifier,
       {forceRefresh: false}) async {
     return await _executeRESTCall(
         endpoint, -1, params, apiCallMethod, apiIdentifier,
@@ -24,7 +24,7 @@ abstract class RESTRequest {
   }
 
   Future<Response> _executeRESTCall(String endpoint, int resourceId,
-      Map<String, dynamic> params, int apiCallMethod, int apiIdentifier,
+      dynamic params, int apiCallMethod, int apiIdentifier,
       {bool forceRefresh: false}) async {
     var buffer = new StringBuffer();
     buffer.writeAll([apiUrl, "/", endpoint]);
