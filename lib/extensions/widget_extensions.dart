@@ -14,7 +14,7 @@ extension BaseWidgetExtension on Widget {
         msg: message,
         toastLength: toastLength,
         gravity: gravity,
-        timeInSecForIos: timeInSecForIos,
+        timeInSecForIosWeb: timeInSecForIos,
         backgroundColor: backgroundColor,
         textColor: textColor,
         fontSize: fontSize);
