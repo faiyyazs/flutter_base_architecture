@@ -13,6 +13,7 @@ class RESTService {
   static const int URI = 6;
   static const int PATCH = 7;
   static const int PATCH_URI = 8;
+  static const int PATCH_FROM_DATA = 9;
   static const String data = "data";
   static const String API_URL = "APIURL";
   static const String EXTRA_FORCE_REFRESH = "EXTRA_FORCE_REFRESH";
@@ -131,6 +132,12 @@ class RESTService {
 
         case RESTService.PATCH:
           Future<Response> response = request.patch(action, data: parameters);
+          return parseResponse(response, apiCallIdentifier);
+          break;
+
+        case RESTService.PATCH_FROM_DATA:
+          FormData formData = FormData.fromMap(parameters);
+          Future<Response> response = request.patch(action, data: formData);
           return parseResponse(response, apiCallIdentifier);
           break;
 

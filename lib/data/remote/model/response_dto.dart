@@ -32,7 +32,7 @@ class ResponseDto {
     map["message"] = _message;
     map["code"] = _code;
     map["data"] = _data;
-    map["error"] = _errors;
+    map["errors"] = _errors;
     return map;
   }
 }
