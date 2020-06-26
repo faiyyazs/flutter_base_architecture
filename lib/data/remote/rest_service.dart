@@ -14,6 +14,7 @@ class RESTService {
   static const int PATCH = 7;
   static const int PATCH_URI = 8;
   static const int PATCH_FROM_DATA = 9;
+  static const int POST_QUERY = 10;
   static const String data = "data";
   static const String API_URL = "APIURL";
   static const String EXTRA_FORCE_REFRESH = "EXTRA_FORCE_REFRESH";
@@ -108,7 +109,7 @@ class RESTService {
           /* request.options.contentType =
               ContentType.parse("application/x-www-form-urlencoded");
 */
-          Future<Response> response = request.post(action, data: parameters,queryParameters: attachUriWithQuery(parameters));
+          Future<Response> response = request.post(action, data: parameters);
           //  Future<Response> response = request.post(action,data: paramsToJson(parameters));
           return parseResponse(response, apiCallIdentifier);
         // return request.post(action,data: paramsToJson(parameters));
@@ -152,6 +153,11 @@ class RESTService {
 
           return parseResponse(response, apiCallIdentifier);
           break;
+
+        case RESTService.POST_QUERY:
+          Future<Response> response = request.post(action,
+              queryParameters: attachUriWithQuery(parameters));
+          return parseResponse(response, apiCallIdentifier);
 
         default:
           throw DioError(
