@@ -108,7 +108,7 @@ class RESTService {
           /* request.options.contentType =
               ContentType.parse("application/x-www-form-urlencoded");
 */
-          Future<Response> response = request.post(action, data: parameters);
+          Future<Response> response = request.post(action, data: parameters,queryParameters: attachUriWithQuery(parameters));
           //  Future<Response> response = request.post(action,data: paramsToJson(parameters));
           return parseResponse(response, apiCallIdentifier);
         // return request.post(action,data: paramsToJson(parameters));
