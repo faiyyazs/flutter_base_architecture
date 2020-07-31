@@ -47,46 +47,54 @@ class RESTService {
 
     try {
       Dio request = Dio();
-      request.interceptors
-        ..add(DioCacheManager(CacheConfig(baseUrl: apiUrl)).interceptor)
-        ..add(InterceptorsWrapper(onRequest: (Options options) async {
-          //Set the token to headers
-          options.headers["apiCallIdentifier"] = apiCallIdentifier;
-          if (getHeaders() != null) {
-            options.headers.addAll(getHeaders());
-          }
-          options.extra.addAll(
-              buildCacheOptions(Duration(days: 7), forceRefresh: forceRefresh)
-                  .extra);
-          options.extra.update("apiCallIdentifier", (value) => value,
-              ifAbsent: () => apiCallIdentifier);
-          options.extra
-              .update("cached", (value) => value, ifAbsent: () => true);
+      request.interceptors..add(
+          DioCacheManager(CacheConfig(baseUrl: apiUrl)).interceptor)..add(
+          InterceptorsWrapper(/*onRequest: (Options options) async {
+            //Set the token to headers
+            options.headers["apiCallIdentifier"] = apiCallIdentifier;
+            if (getHeaders() != null) {
+              options.headers.addAll(getHeaders());
+            }
+            options.extra.addAll(
+                buildCacheOptions(Duration(days: 7), forceRefresh: forceRefresh)
+                    .extra);
+            options.extra.update("apiCallIdentifier", (value) => value,
+                ifAbsent: () => apiCallIdentifier);
+            options.extra
+                .update("cached", (value) => value, ifAbsent: () => true);
 
-          return options; //continue
-        }, onError: (DioError e) async {
-          if (e.response != null) {
-            print(e.response.data);
-            print(e.response.headers);
-            print(e.response.request);
+            return options; //continue
+          },*/ onError: (DioError e) async {
+            if (e.response != null) {
+              print(e.response.data);
+              print(e.response.headers);
+              print(e.response.request);
 
-            return parseErrorResponse(e, apiCallIdentifier);
-          } else {
-            // Something happened in setting up or sending the request that triggered an Error
-            print(e.request);
-            print(e.message);
-            return parseErrorResponse(e, apiCallIdentifier);
-          }
-        }, onResponse: (response) {
-          response.headers
-              .add("apiCallIdentifier", apiCallIdentifier.toString());
-          response.extra.update("apiCallIdentifier", (value) => value,
-              ifAbsent: () => apiCallIdentifier);
-          response.extra
-              .update("cached", (value) => false, ifAbsent: () => false);
-        }));
+              return parseErrorResponse(e, apiCallIdentifier);
+            } else {
+              // Something happened in setting up or sending the request that triggered an Error
+              print(e.request);
+              print(e.message);
+              return parseErrorResponse(e, apiCallIdentifier);
+            }
+          }, onResponse: (response) {
+            response.headers
+                .add("apicallidentifier", apiCallIdentifier.toString());
+            response.extra.update("apicallidentifier", (value) => value,
+                ifAbsent: () => apiCallIdentifier);
+            response.extra
+                .update("cached", (value) => false, ifAbsent: () => false);
+          }));
+      request.options.headers['apicallidentifier'] = apiCallIdentifier;
+      request.options.extra.update("apicallidentifier", (value) => value,
+          ifAbsent: () => apiCallIdentifier);
+      request.options.headers["cached"] = true;
+      if (getHeaders() != null) {
+        getHeaders().forEach((key, value) {
+          request.options.headers[key] = value;
+        });
+      }
       request.interceptors.add(LogInterceptor(responseBody: false));
-
       logParams(parameters);
 
       switch (verb) {
@@ -106,13 +114,14 @@ class RESTService {
           return parseResponse(response, apiCallIdentifier);
 
         case RESTService.POST:
-          /* request.options.contentType =
+        /* request.options.contentType =
               ContentType.parse("application/x-www-form-urlencoded");
 */
-          Future<Response> response = request.post(action, data: parameters);
+
+          Future<Response> response = request.post(action, data: parameters,);
           //  Future<Response> response = request.post(action,data: paramsToJson(parameters));
           return parseResponse(response, apiCallIdentifier);
-        // return request.post(action,data: paramsToJson(parameters));
+      // return request.post(action,data: paramsToJson(parameters));
 
         case RESTService.FORMDATA:
           FormData formData = FormData.fromMap(parameters);
@@ -121,13 +130,13 @@ class RESTService {
 
         case RESTService.PUT:
           Future<Response> response =
-              request.put(action, data: paramstoJson(parameters));
+          request.put(action, data: paramstoJson(parameters));
           return parseResponse(response, apiCallIdentifier);
           break;
 
         case RESTService.DELETE:
           Future<Response> response =
-              request.delete(action, data: paramstoJson(parameters));
+          request.delete(action, data: paramstoJson(parameters));
           return parseResponse(response, apiCallIdentifier);
           break;
 
@@ -208,7 +217,7 @@ class RESTService {
         case DioErrorType.DEFAULT:
           amerError.type = BaseErrorType.DEFAULT;
           amerError.message =
-              "Connection to API server failed due to internet connection";
+          "Connection to API server failed due to internet connection";
           break;
         case DioErrorType.RECEIVE_TIMEOUT:
           amerError.type = BaseErrorType.SERVER_TIMEOUT;
@@ -217,7 +226,7 @@ class RESTService {
         case DioErrorType.RESPONSE:
           amerError.type = BaseErrorType.INVALID_RESPONSE;
           amerError.message =
-              "Received invalid status code: ${error.response.statusCode}";
+          "Received invalid status code: ${error.response.statusCode}";
           break;
         case DioErrorType.SEND_TIMEOUT:
           amerError.type = BaseErrorType.SERVER_TIMEOUT;
@@ -240,8 +249,8 @@ class RESTService {
     return json.encode(params);
   }
 
-  Future<Response> parseErrorResponse(
-      Exception exception, apiCallIdentifier) async {
+  Future<Response> parseErrorResponse(Exception exception,
+      apiCallIdentifier) async {
     return await Future<Response>(() {
       Response response;
 
@@ -267,8 +276,8 @@ class RESTService {
     });
   }
 
-  Future<Response> parseResponse(
-      Future<Response> response, apiCallIdentifier) async {
+  Future<Response> parseResponse(Future<Response> response,
+      apiCallIdentifier) async {
     return await response;
   }
 
