@@ -260,12 +260,12 @@ class RESTService {
         response = Response(headers: Headers());
       }
       //response.data = null;
-      response.headers.set("apiCallIdentifier", apiCallIdentifier.toString());
+      response.headers.set("apicallidentifier", apiCallIdentifier.toString());
 
       //response.statusMessage = _handleError(exception);
       response.extra = Map();
       response.extra.putIfAbsent("exception", () => _handleError(exception));
-      response.extra.update("apiCallIdentifier", (value) => value,
+      response.extra.update("apicallidentifier", (value) => value,
           ifAbsent: () => apiCallIdentifier);
       response.extra.update("cached", (value) => false, ifAbsent: () => false);
       return response;
