@@ -83,9 +83,11 @@ class RESTService {
         request.options.extra.addAll(
             buildCacheOptions(Duration(days: 7), forceRefresh: forceRefresh)
                 .extra);
-        request.options.headers["cached"] = true;
+        request.options.extra
+            .update("cached", (value) => value, ifAbsent: () => true);
       } else {
-        request.options.headers["cached"] = false;
+        request.options.extra
+            .update("cached", (value) => value, ifAbsent: () => false);
       }
       request.interceptors.add(LogInterceptor(responseBody: false));
       logParams(parameters);
