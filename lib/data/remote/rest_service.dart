@@ -22,6 +22,7 @@ class RESTService {
   static const String EXTRA_HTTP_VERB = "EXTRA_HTTP_VERB";
   static const String REST_API_CALL_IDENTIFIER = "REST_API_CALL_IDENTIFIER";
   static const String EXTRA_PARAMS = "EXTRA_PARAMS";
+  DioCacheManager _dioCacheManager;
 
   Future<Response> onHandleIntent(Map<String, dynamic> params) async {
     dynamic action = params.putIfAbsent(data, () {});
@@ -48,8 +49,9 @@ class RESTService {
 
     try {
       Dio request = Dio();
+      _dioCacheManager ??= DioCacheManager(CacheConfig(baseUrl: apiUrl));
       request.interceptors
-        ..add(DioCacheManager(CacheConfig(baseUrl: apiUrl)).interceptor)
+        ..add(_dioCacheManager.interceptor)
         ..add(InterceptorsWrapper(onError: (DioError e) async {
           if (e.response != null) {
             print(e.response.data);
@@ -80,11 +82,16 @@ class RESTService {
         });
       }
       if (!kIsWeb) {
-        request.options.extra.addAll(
-            buildCacheOptions(Duration(days: 7), forceRefresh: forceRefresh)
-                .extra);
-        request.options.extra
-            .update("cached", (value) => value, ifAbsent: () => true);
+        if (forceRefresh) {
+          request.options.extra
+              .update("cached", (value) => value, ifAbsent: () => false);
+        } else {
+          request.options.extra.addAll(
+              buildCacheOptions(Duration(days: 7), forceRefresh: forceRefresh)
+                  .extra);
+          request.options.extra
+              .update("cached", (value) => value, ifAbsent: () => true);
+        }
       } else {
         request.options.extra
             .update("cached", (value) => value, ifAbsent: () => false);
@@ -197,6 +204,11 @@ class RESTService {
       }*/
 
     }
+  }
+
+  Future<bool> clearNetworkCache() {
+    if (_dioCacheManager != null) return _dioCacheManager.clearAll();
+    return Future.value(false);
   }
 
   BaseError _handleError(Exception error) {
