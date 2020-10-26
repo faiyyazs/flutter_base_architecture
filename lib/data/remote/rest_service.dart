@@ -20,6 +20,7 @@ class RESTService {
   static const String EXTRA_HTTP_VERB = "EXTRA_HTTP_VERB";
   static const String REST_API_CALL_IDENTIFIER = "REST_API_CALL_IDENTIFIER";
   static const String EXTRA_PARAMS = "EXTRA_PARAMS";
+  DioCacheManager dioCacheManager;
 
   Future<Response> onHandleIntent(Map<String, dynamic> params) async {
     dynamic action = params.putIfAbsent(data, () {});
@@ -46,8 +47,11 @@ class RESTService {
 
     try {
       Dio request = Dio();
+      if (dioCacheManager == null) {
+        dioCacheManager = DioCacheManager(CacheConfig(baseUrl: apiUrl));
+      }
       request.interceptors
-        ..add(DioCacheManager(CacheConfig(baseUrl: apiUrl)).interceptor)
+        ..add(dioCacheManager.interceptor)
         ..add(InterceptorsWrapper(onRequest: (Options options) async {
           //Set the token to headers
           options.headers["apiCallIdentifier"] = apiCallIdentifier;
@@ -108,7 +112,9 @@ class RESTService {
           /* request.options.contentType =
               ContentType.parse("application/x-www-form-urlencoded");
 */
-          Future<Response> response = request.post(action, data: parameters,queryParameters: attachUriWithQuery(parameters));
+          Future<Response> response = request.post(action,
+              data: parameters,
+              queryParameters: attachUriWithQuery(parameters));
           //  Future<Response> response = request.post(action,data: paramsToJson(parameters));
           return parseResponse(response, apiCallIdentifier);
         // return request.post(action,data: paramsToJson(parameters));
@@ -184,6 +190,11 @@ class RESTService {
       }*/
 
     }
+  }
+
+  Future<bool> clearNetworkCache() {
+    if (dioCacheManager != null) return dioCacheManager.clearAll();
+    return Future.value(false);
   }
 
   BaseError _handleError(Exception error) {
