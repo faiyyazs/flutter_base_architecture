@@ -245,7 +245,7 @@ abstract class BaseStatefulScreen<
 
   @override
   void dispose() {
-    getViewModel().dispose();
+    getViewModel()?.dispose();
     super.dispose();
   }
 }
