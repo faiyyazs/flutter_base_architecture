@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_base_architecture/exception/base_error.dart';
+import 'package:flutter_base_architecture/utils/app_logger.dart';
 
 class RESTService {
   static const int GET = 1;
@@ -54,15 +55,15 @@ class RESTService {
         ..add(_dioCacheManager.interceptor)
         ..add(InterceptorsWrapper(onError: (DioError e) async {
           if (e.response != null) {
-            print(e.response.data);
-            print(e.response.headers);
-            print(e.response.request);
+            AppLogger.log(e.response.data);
+            AppLogger.log(e.response.headers);
+            AppLogger.log(e.response.request);
 
             return parseErrorResponse(e, apiCallIdentifier);
           } else {
             // Something happened in setting up or sending the request that triggered an Error
-            print(e.request);
-            print(e.message);
+            AppLogger.log(e.request);
+            AppLogger.log(e.message);
             return parseErrorResponse(e, apiCallIdentifier);
           }
         }, onResponse: (response) {
@@ -179,28 +180,28 @@ class RESTService {
           );
       }
     } catch (error, stacktrace) {
-      print("Exception occured: $error stackTrace: $stacktrace");
-      // print(_handleError(error));
+      AppLogger.log("Exception occured: $error stackTrace: $stacktrace");
+      // AppLogger.log(_handleError(error));
       return parseErrorResponse(error, apiCallIdentifier);
       // The request was made and the server responded with a status code
       // that falls out of the range of 2xx and is also not 304.
-      /* print("Exception e::"+e.toString());
+      /* AppLogger.log("Exception e::"+e.toString());
       if(e is DioError) {
-        print("DioError e::"+e.toString());
+        AppLogger.log("DioError e::"+e.toString());
         if (e.response != null) {
-          print(e.response.data);
-          print(e.response.headers);
-          print(e.response.request);
+          AppLogger.log(e.response.data);
+          AppLogger.log(e.response.headers);
+          AppLogger.log(e.response.request);
 
           return parseErrorResponse(e, apiCallIdentifier);
         } else {
           // Something happened in setting up or sending the request that triggered an Error
-          print(e.request);
-          print(e.message);
+          AppLogger.log(e.request);
+          AppLogger.log(e.message);
           return parseErrorResponse(e, apiCallIdentifier);
         }
       }else{
-        print("e::"+e.toString());
+        AppLogger.log("e::"+e.toString());
       }*/
 
     }
@@ -251,8 +252,8 @@ class RESTService {
   }
 
   logParams(Map<String, dynamic> params) {
-    print("Parameters:");
-    print("$params");
+    AppLogger.log("Parameters:");
+    AppLogger.log("$params");
   }
 
   paramstoJson(Map<String, dynamic> params) {

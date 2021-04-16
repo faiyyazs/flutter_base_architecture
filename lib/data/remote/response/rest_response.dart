@@ -4,6 +4,7 @@ import 'dart:core';
 import 'package:dio/dio.dart';
 import 'package:flutter_base_architecture/data/remote/model/response_dto.dart';
 import 'package:flutter_base_architecture/exception/base_error.dart';
+import 'package:flutter_base_architecture/utils/app_logger.dart';
 
 abstract class RESTResponse<T> {
   static const String API_STATUS_SUCCESS = "success";
@@ -32,19 +33,19 @@ abstract class RESTResponse<T> {
   RESTResponse(this.response) {
     try {
       if (this.response?.data != null) {
-        print(this.response.data.toString());
-        _apiIdenfier = response?.extra["apicallidentifier"];
-        print("_apiIdenfier" + _apiIdenfier?.toString());
-        print("cached: " + response?.extra["cached"]?.toString());
-        print("RESTResponse:: Encrypted " + this.response.data.toString());
+        AppLogger.log(this.response.data.toString());
+        _apiIdenfier = response?.extra["apiCallIdentifier"];
+        AppLogger.log("_apiIdenfier" + _apiIdenfier?.toString());
+        AppLogger.log("cached: " + response?.extra["cached"]?.toString());
+        AppLogger.log("RESTResponse:: Encrypted " + this.response.data.toString());
         parseEncryptedResponse(this.response.data);
       } else if (this.response.extra.containsKey("exception")) {
-        print("Exception");
+        AppLogger.log("Exception");
         throw this.response.extra["exception"]
             as BaseError; //Exception(this.response.statusMessage);
       }
     } catch (error) {
-      print("Response error>>>>>>>>>>" + error.toString());
+      AppLogger.log("Response error>>>>>>>>>>" + error.toString());
       getErrors().add(BaseError(
           error: error,
           message: error.toString(),
@@ -82,7 +83,7 @@ abstract class RESTResponse<T> {
 
   parseResponse(Map<String, dynamic> response) {
     Map<String, dynamic> responseObject = response;
-    print("RESTResponse:: Decrypted: " + response.toString());
+    AppLogger.log("RESTResponse:: Decrypted: " + response.toString());
     try {
       ResponseDto _responseDto =
           ResponseDto.map(responseObject, this.response.statusCode);
@@ -99,11 +100,11 @@ abstract class RESTResponse<T> {
             type: BaseErrorType.SERVER_MESSAGE));
         return;
       }
-      print("RESTResponse: " + _responseDto.data.toString());
+      AppLogger.log("RESTResponse: " + _responseDto.data.toString());
       parseResponseData(_responseDto.data, this._apiIdenfier);
     } catch (error) {
       getErrors().add(error);
-      print("RESTResponse:: Error" + error.toString());
+      AppLogger.log("RESTResponse:: Error" + error.toString());
     }
   }
 
