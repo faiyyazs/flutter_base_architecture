@@ -34,7 +34,7 @@ abstract class RESTResponse<T> {
     try {
       if (this.response?.data != null) {
         AppLogger.log(this.response.data.toString());
-        _apiIdenfier = response?.extra["apiCallIdentifier"];
+        _apiIdenfier = response?.extra["apicallidentifier"];
         AppLogger.log("_apiIdenfier" + _apiIdenfier?.toString());
         AppLogger.log("cached: " + response?.extra["cached"]?.toString());
         AppLogger.log("RESTResponse:: Encrypted " + this.response.data.toString());
